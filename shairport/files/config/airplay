@@ -1,6 +1,0 @@
-config airplay
-	option bname 'Living Room'
-	option initbuf 220
-	option daemonize true
-#	option port 5002
-
