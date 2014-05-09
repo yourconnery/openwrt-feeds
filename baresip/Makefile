@@ -32,6 +32,7 @@ baresip-mods:= \
 	sdl \
 	speex \
 	speex_aec \
+	speex_pp \
 	stdio \
 	uuid \
 	vumeter \
@@ -70,6 +71,7 @@ baresip-mod-opus      := USE_OPUS
 baresip-mod-sdl       := USE_SDL
 baresip-mod-speex     := USE_SPEEX
 baresip-mod-speex_aec := USE_SPEEX_AEC
+baresip-mod-speex_pp  := USE_SPEEX_PP
 baresip-mod-stdio     := USE_STDIO
 baresip-mod-uuid      := USE_UUID
 baresip-mod-vumeter   := USE_VUMETER
@@ -164,7 +166,8 @@ $(eval $(call BuildPlugin,sdl,SDL video display,sdl,+libsdl))
 $(eval $(call BuildPlugin,oss,OSS audio driver,oss,))
 $(eval $(call BuildPlugin,opus,OPUS codec, opus, +PACKAGE_baresip-mod-opus:opus))
 $(eval $(call BuildPlugin,speex,Speex audio codec,speex,+PACKAGE_baresip-mod-speex:libspeex))
-$(eval $(call BuildPlugin,speex_aec,Speex audio codec dsp,speex_aec,+PACKAGE_baresip-mod-speex_aec:libspeexdsp))
+$(eval $(call BuildPlugin,speex_aec,Speex audio dsp - echo cancellation,speex_aec,+PACKAGE_baresip-mod-speex_aec:libspeexdsp))
+$(eval $(call BuildPlugin,speex_pp, Speex audio dsp - preprocessor,speex_pp,+PACKAGE_baresip-mod-speex_pp:libspeexdsp))
 $(eval $(call BuildPlugin,stdio,standard I/O UI,stdio,))
 $(eval $(call BuildPlugin,uuid,UUID,uuid,+libuuid))
 $(eval $(call BuildPlugin,vumeter,vumeter,vumeter))
