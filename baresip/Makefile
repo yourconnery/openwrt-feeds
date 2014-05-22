@@ -27,6 +27,7 @@ baresip-mods:= \
 	g711 \
 	g722 \
 	gst \
+	h264packet \
 	oss \
 	opus \
 	sdl \
@@ -66,6 +67,7 @@ baresip-mod-evdev     := USE_EVDEV
 baresip-mod-g711      := USE_G711
 baresip-mod-g722      := USE_G722
 baresip-mod-gst       := USE_GST
+baresip-mod-h264packet:= USE_H264PACKET
 baresip-mod-oss       := USE_OSS
 baresip-mod-opus      := USE_OPUS
 baresip-mod-sdl       := USE_SDL
@@ -162,6 +164,7 @@ $(eval $(call BuildPlugin,evdev,input event device UI,evdev,))
 $(eval $(call BuildPlugin,g711,G.711 audio codec,g711,))
 $(eval $(call BuildPlugin,g722,G.722 audio codec,g722,+PACKAGE_baresip-mod-g722:libspandsp))
 $(eval $(call BuildPlugin,gst, gstreamer framework,gst, +gst-mod-alsa  +gst-mod-audioconvert +gst-mod-audioresample))
+$(eval $(call BuildPlugin,h264packet, H.264 stream packetize,h264packet, +gst-mod-alsa  +gst-mod-audioconvert +gst-mod-audioresample))
 $(eval $(call BuildPlugin,sdl,SDL video display,sdl,+libsdl))
 $(eval $(call BuildPlugin,oss,OSS audio driver,oss,))
 $(eval $(call BuildPlugin,opus,OPUS codec, opus, +PACKAGE_baresip-mod-opus:opus))
