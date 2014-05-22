@@ -13,9 +13,11 @@ PKG_VERSION:=0.4.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.creytiv.com/pub
-PKG_MD5SUM:=2b00171a9106105bf90325a5bc63fc65
-
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/yourconnery/librem
+PKG_SOURCE_VERSION:=master
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+ 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/librem
