@@ -147,7 +147,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/mosquitto $(1)/usr/sbin/mosquitto
 	$(INSTALL_DIR) $(1)/etc/mosquitto
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/mosquitto.conf $(1)/etc/mosquitto/mosquitto.conf
+	$(INSTALL_CONF) ./files/mosquitto.conf $(1)/etc/mosquitto/mosquitto.conf
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/mosquitto.init $(1)/etc/init.d/mosquitto
 	$(INSTALL_DIR) $(1)/usr/bin
