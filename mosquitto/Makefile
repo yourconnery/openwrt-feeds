@@ -9,35 +9,60 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mosquitto
-PKG_VERSION:=1.3.5
-PKG_RELEASE:=1
+PKG_VERSION:=1.4.2
+PKG_RELEASE:=2
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.txt
 
+#PKG_REV:=1a14f6fed585e0bb769932a7938cacec9d76d97a
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+#PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+#PKG_SOURCE_URL:=http://git.eclipse.org/gitroot/mosquitto/org.eclipse.mosquitto.git
+# TODO - get @ECLIPSE mirror support to work...
 PKG_SOURCE_URL:=http://mosquitto.org/files/source/
-PKG_MD5SUM:=55094ad4dc7c7985377f43d4fc3d09da
+#PKG_SOURCE_PROTO:=git
+#PKG_SOURCE_VERSION:=$(PKG_REV)
+PKG_MD5SUM:=2c3b19686c04849ed4b183c63149bfe1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
-MAKE_FLAGS+=WITH_MEMORY_TRACKING=no
+MAKE_FLAGS+=WITH_DOCS=no
+MAKE_FLAGS+=WITH_WEBSOCKETS=$(if $(CONFIG_MOSQUITTO_LWS),"yes","no")
+
+include $(INCLUDE_DIR)/version.mk
+# The version of libopenssl in backfire doesn't support psk.
+ifeq ($(findstring 10.03,$(VERSION_CODE)),10.03)
+    MAKE_FLAGS += WITH_TLS_PSK=no
+endif
+# libopenssl prior to Barrier Breaker didn't support elliptic curve crypto
+ifeq ($(findstring Attitude,$(VERSION_CODE)),Attitude)
+    MAKE_FLAGS += WITH_EC=no
+endif
+
 
 define Package/$(PKG_NAME)/default
   SECTION:=net
   CATEGORY:=Network
   TITLE:=mosquitto - an MQTT message broker
   URL:=http://www.mosquitto.org/
-  MAINTAINER:=Karl Palsson <karlp@remake.is>
-  DEPENDS:= +librt
-  USERID:=mosquitto=200:mosquitto=200
+  DEPENDS:= +librt +libuuid
 endef
 
 define Package/$(PKG_NAME)
     $(call Package/mosquitto/default)
     TITLE+= (with SSL support)
-    DEPENDS+= +libopenssl
+    DEPENDS+= +libopenssl +MOSQUITTO_LWS:libwebsockets-openssl
     VARIANT:=ssl
+endef
+
+define Package/$(PKG_NAME)/config
+	config MOSQUITTO_LWS
+    bool "libwebsockets support"
+    depends on PACKAGE_mosquitto
+    default y
+    help
+        Includes websockets support in the broker, via libwebsockets
 endef
 
 define Package/$(PKG_NAME)-nossl
@@ -47,9 +72,9 @@ define Package/$(PKG_NAME)-nossl
 endef
 
 define Package/$(PKG_NAME)/default/description
-Mosquitto is an open source (BSD licensed) message broker that implements
-the MQTT protocol version 3.1 and 3.1.1. MQTT provides a lightweight
-method of carrying out messaging using a publish/subscribe model.
+ mosquitto is a message broker that supports v3.1 of the MQ Telemetry
+Transport protocol. MQTT provides a lightweight method for
+messaging using a publish/subscribe model.
 
 This package also includes some basic support for configuring via UCI
 endef
@@ -63,7 +88,6 @@ define Package/$(PKG_NAME)-nossl/description
         $(call Package/$(PKG_NAME)/default/description)
         This package is built WITHOUT SSL support.
 endef
-
 
 define Package/mosquitto-client/default
     $(Package/mosquitto/default)
@@ -122,7 +146,7 @@ define Package/libmosquitto/default/description
 use by any third party software that wants to communicate with a
 mosquitto server.
 
-Should be useable for communicating with any MQTT v3.1/3.1.1 compatible
+Should be useable for communicating with any MQTT v3.1 compatible
 server, such as IBM's RSMB, in addition to Mosquitto
 endef
 
@@ -147,7 +171,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/mosquitto $(1)/usr/sbin/mosquitto
 	$(INSTALL_DIR) $(1)/etc/mosquitto
-	$(INSTALL_CONF) ./files/mosquitto.conf $(1)/etc/mosquitto/mosquitto.conf
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/mosquitto.conf $(1)/etc/mosquitto/mosquitto.conf
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/mosquitto.init $(1)/etc/init.d/mosquitto
 	$(INSTALL_DIR) $(1)/usr/bin
